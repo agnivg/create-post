@@ -11,7 +11,6 @@ const App=()=>{
     const [post,setPost]=useState([]);
     const [fileName,setFileName]=useState("");
     const [ip,setIp]=useState("");
-    const [ld,setLd]=useState(true);
     const change=(e)=>{
         const name=e.target.name;
         const val=e.target.value;
@@ -64,7 +63,6 @@ const App=()=>{
             })         
     }
     const likepost=(e,id)=>{
-        if(ld){
             e.preventDefault()
             axios({
                 url:'/api/like',
@@ -73,18 +71,12 @@ const App=()=>{
             }).then((res)=>{
                 if(!res.data.success)
                     alert(res.data.message);
-                else
-                    setLd(false);
                 getPosts();
             }).catch((e)=>{
                 console.log("Internal Server error");
             })
-        }
-        else    
-            alert("You have already responded");
     }
     const dislikepost=(e,id)=>{
-        if(ld){
             e.preventDefault()
             axios({
                 url:'/api/dislike',
@@ -93,15 +85,10 @@ const App=()=>{
             }).then((res)=>{
                 if(!res.data.success)
                     alert(res.data.message);
-                else
-                    setLd(false);
                 getPosts();
             }).catch((e)=>{
                 console.log("Internal Server error");
             })
-        }
-        else    
-            alert("You have already responded");
     }
     const deletepost=(e,id)=>{
         e.preventDefault()

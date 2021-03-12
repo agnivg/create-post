@@ -48,6 +48,7 @@ const PostSchema=new mongoose.Schema({
         type:String,
         required:true
     },
+    ipArray:Array,
     createdAt:String
 });
 const Post=new mongoose.model("Post",PostSchema);
@@ -78,8 +79,12 @@ app.post('/api/like',async(req,res)=>{
     try{
         const l=await Post.findById(req.body.id);
         if(l.ip!==req.body.ip){
-            const dat=await Post.findByIdAndUpdate(req.body.id,{like:l.like+1},{new:true})
-            return res.json({success:true})
+            if(l.ipArray.indexOf(req.body.ip)===-1){
+                const dat=await Post.findByIdAndUpdate(req.body.id,{like:l.like+1,$push:{ipArray:req.body.ip}},{new:true})
+                return res.json({success:true})
+            }
+            else
+                return res.json({success:false, message:"You have already reacted"})
         }   
         else
             return res.json({success:false, message:"You cannot like your own posts"})   
@@ -105,8 +110,12 @@ app.post('/api/dislike',async(req,res)=>{
     try{
         const l=await Post.findById(req.body.id);
         if(l.ip!==req.body.ip){
-            const dat=await Post.findByIdAndUpdate(req.body.id,{like:l.dislike+1},{new:true})
-            return res.json({success:true})
+            if(l.ipArray.indexOf(req.body.ip)===-1){
+                const dat=await Post.findByIdAndUpdate(req.body.id,{dislike:l.dislike+1,$push:{ipArray:req.body.ip}},{new:true})
+                return res.json({success:true})
+            }
+            else
+                return res.json({success:false, message:"You have already reacted"})
         }   
         else
             return res.json({success:false, message:"You cannot dislike your own posts"})   
