@@ -105,7 +105,7 @@ app.post('/api/dislike',async(req,res)=>{
     try{
         const l=await Post.findById(req.body.id);
         if(l.ip!==req.body.ip){
-            const dat=await Post.findByIdAndUpdate(req.body.id,{like:l.dislike+1},{new:true})
+            const dat=await Post.findByIdAndUpdate(req.body.id,{dislike:l.dislike+1},{new:true})
             return res.json({success:true})
         }   
         else
