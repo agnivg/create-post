@@ -131,7 +131,8 @@ h4{
 .post-body{
     background-color: rgba(255, 192, 213, 0.26);
     padding: 25px;
-    margin-bottom: 10px;
+    margin-bottom:10px;
+    word-wrap: break-word;
 }
 .fa{
     color: blue;

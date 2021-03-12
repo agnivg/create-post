@@ -10,6 +10,8 @@ const App=()=>{
     })
     const [post,setPost]=useState([]);
     const [fileName,setFileName]=useState("");
+    const [ip,setIp]=useState("");
+    const [ld,setLd]=useState(true);
     const change=(e)=>{
         const name=e.target.name;
         const val=e.target.value;
@@ -18,12 +20,18 @@ const App=()=>{
             [name]:val
         })
     }
+    const getip=async()=>{
+        const d=await fetch('https://api.ipify.org?format=json')
+        const dat=await d.json();
+        setIp(dat.ip);
+    }
     const submit=(e)=>{
-        e.preventDefault();
+        e.preventDefault();       
         const d={
             user:data.user,
             desc:data.desc,
-            fname:fileName
+            fname:fileName,
+            ip:ip
         }
         axios.post('/api/submit/data',d).then(()=>{
             setData({
@@ -53,41 +61,59 @@ const App=()=>{
                     setFileName(data.data.display_url);
                 };
                 reader.onerror = error => alert(error);
-            })
-           
+            })         
     }
     const likepost=(e,id)=>{
-        e.preventDefault()
-        axios({
-            url:'/api/like',
-            method:'POST',
-            data: {id:id}
-        }).then(()=>{
-            getPosts();
-        }).catch((e)=>{
-            console.log("Internal Server error");
-        })
+        if(ld){
+            e.preventDefault()
+            axios({
+                url:'/api/like',
+                method:'POST',
+                data: {id:id,ip:ip}
+            }).then((res)=>{
+                if(!res.data.success)
+                    alert(res.data.message);
+                else
+                    setLd(false);
+                getPosts();
+            }).catch((e)=>{
+                console.log("Internal Server error");
+            })
+        }
+        else    
+            alert("You have already responded");
     }
     const dislikepost=(e,id)=>{
-        e.preventDefault()
-        axios({
-            url:'/api/dislike',
-            method:'POST',
-            data: {id:id}
-        }).then(()=>{
-            getPosts();
-        }).catch(()=>{
-            console.log("Internal Server error");
-        })
+        if(ld){
+            e.preventDefault()
+            axios({
+                url:'/api/dislike',
+                method:'POST',
+                data: {id:id,ip:ip}
+            }).then((res)=>{
+                if(!res.data.success)
+                    alert(res.data.message);
+                else
+                    setLd(false);
+                getPosts();
+            }).catch((e)=>{
+                console.log("Internal Server error");
+            })
+        }
+        else    
+            alert("You have already responded");
     }
     const deletepost=(e,id)=>{
         e.preventDefault()
         axios({
             url:'/api/delete',
             method:'POST',
-            data: {id:id}
-        }).then(()=>{
-            console.log("Deleted Successfully");
+            data: {id:id,ip:ip}
+        }).then((res)=>{
+            if(res.data.success)
+                console.log("Deleted Successfully");
+            else
+                alert(res.data.message);
             getPosts();
         }).catch(()=>{
             console.log("Internal Server error");
@@ -100,6 +126,7 @@ const App=()=>{
     }
     useEffect(()=>{
         getPosts();
+        getip();
     },[])
     const displayPosts=(posts)=>{
         if(!posts.length){
@@ -111,23 +138,47 @@ const App=()=>{
                 {
                     posts.map((post,index)=>{
                         if(post.image===""){
-                            return(
-                            <div key={index} className="post-body">
-                                <h4>Created by <span style={{color:"red"}}>{post.name} </span><p className="createdAt"> {post.createdAt}</p></h4>
-                                <p style={{color:"brown",fontSize:"1.2rem",fontWeight:"bold"}}>{post.description}</p>
-                                <div className="like-dislike"><button onClick={(e)=>likepost(e,post._id)} className="btnl"><i className="fa fa-thumbs-up"></i></button> {post.like} <button onClick={(e)=>dislikepost(e,post._id)} className="btnl"><i className="fa fa-thumbs-down"></i></button> {post.dislike}<button onClick={(e)=>deletepost(e,post._id)} className="delete">Delete Post</button></div>
-                            </div>
-                            )
+                            if(post.ip===ip){
+                                return(
+                                <div key={index} className="post-body">
+                                    <h4>Created by <span style={{color:"red"}}>{post.name} </span><p className="createdAt"> {post.createdAt}</p></h4>
+                                    <p style={{color:"brown",fontSize:"1.2rem",fontWeight:"bold"}}>{post.description}</p>                          
+                                    <div className="like-dislike"><button onClick={(e)=>likepost(e,post._id)} className="btnl"><i className="fa fa-thumbs-up"></i></button> {post.like} <button onClick={(e)=>dislikepost(e,post._id)} className="btnl"><i className="fa fa-thumbs-down"></i></button> {post.dislike}<button onClick={(e)=>deletepost(e,post._id)} className="delete">Delete Post</button></div>
+                                </div>
+                                )                             
+                            }
+                            else{
+                                return(
+                                <div key={index} className="post-body">
+                                    <h4>Created by <span style={{color:"red"}}>{post.name} </span><p className="createdAt"> {post.createdAt}</p></h4>
+                                    <p style={{color:"brown",fontSize:"1.2rem",fontWeight:"bold"}}>{post.description}</p>                          
+                                    <div className="like-dislike"><button onClick={(e)=>likepost(e,post._id)} className="btnl"><i className="fa fa-thumbs-up"></i></button> {post.like} <button onClick={(e)=>dislikepost(e,post._id)} className="btnl"><i className="fa fa-thumbs-down"></i></button> {post.dislike}</div>
+                                </div>
+                                )                              
+                            }
                         }
                         else{
-                            return(
-                            <div key={index} className="post-body">
-                            <h4>Created by <span style={{color:"red"}}>{post.name} </span><p className="createdAt"> {post.createdAt}</p></h4>
-                                <p style={{color:"brown",fontSize:"1.2rem",fontWeight:"bold"}}>{post.description}</p>
-                                <a href={post.image} target="_blank" rel="noreferrer"><img src={post.image} className="post-image" alt=""/></a>
-                                <div className="like-dislike"><button onClick={(e)=>likepost(e,post._id)} className="btnl"><i className="fa fa-thumbs-up"></i></button> {post.like} <button onClick={(e)=>dislikepost(e,post._id)} className="btnl"><i className="fa fa-thumbs-down"></i></button> {post.dislike}<button onClick={(e)=>deletepost(e,post._id)} className="delete">Delete Post</button></div>
-                            </div>
-                            )
+                            if(post.ip===ip){
+                                return(
+                                <div key={index} className="post-body">
+                                    <h4>Created by <span style={{color:"red"}}>{post.name} </span><p className="createdAt"> {post.createdAt}</p></h4>
+                                    <p style={{color:"brown",fontSize:"1.2rem",fontWeight:"bold"}}>{post.description}</p>
+                                    <a href={post.image} target="_blank" rel="noreferrer"><img src={post.image} className="post-image" alt=""/></a>
+                                    <div className="like-dislike"><button onClick={(e)=>likepost(e,post._id)} className="btnl"><i className="fa fa-thumbs-up"></i></button> {post.like} <button onClick={(e)=>dislikepost(e,post._id)} className="btnl"><i className="fa fa-thumbs-down"></i></button> {post.dislike}<button onClick={(e)=>deletepost(e,post._id)} className="delete">Delete Post</button></div>
+                                </div>
+                                )
+                            }
+                            else{
+                                return(
+                                <div key={index} className="post-body">
+                                    <h4>Created by <span style={{color:"red"}}>{post.name} </span><p className="createdAt"> {post.createdAt}</p></h4>
+                                    <p style={{color:"brown",fontSize:"1.2rem",fontWeight:"bold"}}>{post.description}</p>
+                                    <a href={post.image} target="_blank" rel="noreferrer"><img src={post.image} className="post-image" alt=""/></a>
+                                    <div className="like-dislike"><button onClick={(e)=>likepost(e,post._id)} className="btnl"><i className="fa fa-thumbs-up"></i></button> {post.like} <button onClick={(e)=>dislikepost(e,post._id)} className="btnl"><i className="fa fa-thumbs-down"></i></button> {post.dislike}</div>
+                                </div>
+                                )                               
+                                
+                            }
                         }                       
                     })
                 }

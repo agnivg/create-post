@@ -3,6 +3,7 @@ const mongoose=require('mongoose');
 const multer=require('multer');
 const path=require('path');
 const cors=require('cors');
+const e = require('express');
 
 const app=express();
 app.use(cors());
@@ -43,6 +44,10 @@ const PostSchema=new mongoose.Schema({
         type:String,
         default:""
     },
+    ip:{
+        type:String,
+        required:true
+    },
     createdAt:String
 });
 const Post=new mongoose.model("Post",PostSchema);
@@ -59,7 +64,8 @@ app.post('/api/submit/data',async(req,res)=>{
             name:req.body.user,
             description:req.body.desc,
             createdAt:`${time} ${date}`,
-            image:a
+            image:a,
+            ip:req.body.ip
         })
         const reg=await post.save();
         res.status(200).send(reg);
@@ -71,28 +77,41 @@ app.post('/api/submit/data',async(req,res)=>{
 app.post('/api/like',async(req,res)=>{
     try{
         const l=await Post.findById(req.body.id);
-        const dat=await Post.findByIdAndUpdate(req.body.id,{like:l.like+1},{new:true})
-        res.status(200).send(dat);
+        if(l.ip!==req.body.ip){
+            const dat=await Post.findByIdAndUpdate(req.body.id,{like:l.like+1},{new:true})
+            return res.json({success:true})
+        }   
+        else
+            return res.json({success:false, message:"You cannot like your own posts"})   
     }catch(err){
-        res.status(500).send(err);
+        return res.json({success:false, message:err})
     }
 })
 app.post("/api/delete",async(req,res)=>{
-    console.log(req.body);
     try{
-        const data=await Post.findByIdAndDelete({_id:req.body.id});
-        res.status(200).send(data);
+        const l=await Post.findById(req.body.id);
+        if(l.ip===req.body.ip){
+            const data=await Post.findByIdAndDelete({_id:req.body.id});
+            return res.json({success:true})
+        }
+        else{
+            return res.json({success:false, message:"Only creator of post has right to delete"})
+        }
     }catch(err){
-        res.status(500).send(err);
+        return res.json({success:false, message:err})
     }
 })
 app.post('/api/dislike',async(req,res)=>{
     try{
         const l=await Post.findById(req.body.id);
-        const dat=await Post.findByIdAndUpdate(req.body.id,{dislike:l.dislike+1},{new:true})
-        res.status(200).send(dat);
+        if(l.ip!==req.body.ip){
+            const dat=await Post.findByIdAndUpdate(req.body.id,{like:l.dislike+1},{new:true})
+            return res.json({success:true})
+        }   
+        else
+            return res.json({success:false, message:"You cannot dislike your own posts"})   
     }catch(err){
-        res.status(500).send(err);
+        return res.json({success:false, message:err})
     }
 })
 app.get('/api/data',async(req,res)=>{
