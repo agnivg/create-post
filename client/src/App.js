@@ -11,6 +11,7 @@ const App=()=>{
     const [post,setPost]=useState([]);
     const [fileName,setFileName]=useState("");
     const [ip,setIp]=useState("");
+    const [inputkey,setInputkey]=useState(Date.now());
     const change=(e)=>{
         const name=e.target.name;
         const val=e.target.value;
@@ -43,6 +44,7 @@ const App=()=>{
         }).catch(()=>{
             console.log("Internal Server error");
         })
+        setInputkey(Date.now());
     }
     async function drop(e){
             const files = Array.from(e.target.files)
@@ -92,19 +94,25 @@ const App=()=>{
     }
     const deletepost=(e,id)=>{
         e.preventDefault()
-        axios({
-            url:'/api/delete',
-            method:'POST',
-            data: {id:id,ip:ip}
-        }).then((res)=>{
-            if(res.data.success)
-                console.log("Deleted Successfully");
-            else
-                alert(res.data.message);
-            getPosts();
-        }).catch(()=>{
-            console.log("Internal Server error");
-        })
+        var a=prompt("Are you sure you want to delete the post? Write yes to confirm....");
+        if(a===null)
+            a="";
+        a=a.toLowerCase();
+        if(a==="yes"){
+            axios({
+                url:'/api/delete',
+                method:'POST',
+                data: {id:id,ip:ip}
+            }).then((res)=>{
+                if(res.data.success)
+                    console.log("Deleted Successfully");
+                else
+                    alert(res.data.message);
+                getPosts();
+            }).catch(()=>{
+                console.log("Internal Server error");
+            })
+        }       
     }
     const getPosts=async()=>{
         const res=await fetch('/api/data');
@@ -112,6 +120,7 @@ const App=()=>{
         setPost(posts);
     }
     useEffect(()=>{
+        alert("Community Guidelines:\n1. Treat others online as you would treat them in real life\n2. Be tolerant towards other’s viewpoints; respectfully disagree when opinions do not align\n3. Respect the privacy and personal information of others\n4. Communicate with courtesy and respect\n\nPlease do not:\n1. Make personal attacks on other community members\n2. Use defamatory remarks or make false statements against others\n3. Post prejudiced comments or profanity\n4. Bully or make inflammatory remarks to other community members\n\nConsequences:\nWe will take action when we see someone violating these guidelines. Sometimes that just means giving someone a warning; other times it means revoking certain privileges or accounts entirely. We request that all community members report behavior that violates our guidelines to agnivg157@gmail.com.\n\nAgreement:\nBy logging onto the community and activating your profile, you are considered to be in agreement with the terms and conditions listed above.")
         getPosts();
         getip();
     },[])
@@ -183,7 +192,7 @@ const App=()=>{
                     <div style={{textAlign:'center',color:'white',fontSize:'1.2rem'}}>Write your post</div>
                     <textarea name="desc" rows="10" cols="50" value={data.desc} placeholder="Your post" className="desc" onChange={change} required/><br/>
                     <div style={{textAlign:'center',color:'white',fontSize:'1.2rem'}}>Upload Image(If want to)</div>
-                    <input type="file" name="myImage" accept=".jpeg,.jpg,.png" placeholder="Upload image" className="image" id="myfile" onChange={drop}/>
+                    <input type="file" name="myImage" accept=".jpeg,.jpg,.png" placeholder="Upload image" className="image" id="myfile" onChange={drop} key={inputkey}/>
                     <button className="btn" type="submit">Create Post</button>
                 </form>
             </div>

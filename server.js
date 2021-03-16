@@ -110,17 +110,12 @@ app.post('/api/dislike',async(req,res)=>{
     try{
         const l=await Post.findById(req.body.id);
         if(l.ip!==req.body.ip){
-<<<<<<< HEAD
             if(l.ipArray.indexOf(req.body.ip)===-1){
                 const dat=await Post.findByIdAndUpdate(req.body.id,{dislike:l.dislike+1,$push:{ipArray:req.body.ip}},{new:true})
                 return res.json({success:true})
             }
             else
                 return res.json({success:false, message:"You have already reacted"})
-=======
-            const dat=await Post.findByIdAndUpdate(req.body.id,{dislike:l.dislike+1},{new:true})
-            return res.json({success:true})
->>>>>>> dac2326540e1ae4d9e314b98ee6a84248e8fa4e8
         }   
         else
             return res.json({success:false, message:"You cannot dislike your own posts"})   
