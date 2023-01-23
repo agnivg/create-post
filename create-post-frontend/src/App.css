@@ -1,0 +1,149 @@
+@media only screen and (min-width: 784px){
+    .btn{
+        text-align: center;
+        margin: 10px 40%;
+        width: 20%; 
+        background-color: seagreen;
+        color: white;
+        height: 30px;
+        border-radius: 20px;
+        border: 1px solid white;
+    }
+    .body{
+        margin: 3% 20%;
+        padding: 1%;
+        background-color: rgba(38, 0, 255, 0.507);
+    }
+    .posts{
+        background-color: white;
+        margin:1% 10%;
+        padding:10px 20px;
+    }
+    .post-image{
+        height: 500px;
+        margin:2% 0;
+        width: 60%;
+    }
+    .createdAt{
+        display:inline;
+        font-size:0.8rem;
+        color:grey;
+        font-weight: bold;
+    }
+    .delete{
+        margin-left: 70%;
+        margin-top: 10px;
+        height: 20px;
+        width: 100px;
+        background-color: red;
+        color: white;
+        border: 2px solid black;
+    }
+}
+@media only screen and (max-width: 783px){
+    .btn{
+        text-align: center;
+        margin: 10px 30%;
+        width: 40%; 
+        background-color: seagreen;
+        color: white;
+        height: 30px;
+        border-radius: 20px;
+        border: 1px solid white;
+    }
+    .body{
+        margin: 3% 10%;
+        padding: 1%;
+        background-color: rgba(38, 0, 255, 0.507);
+    }
+    .posts{
+        background-color: white;
+        margin:1% 5%;
+        padding:10px 20px;
+    }
+    .post-image{
+        height: 300px;
+        margin: 10px 0;
+        width: 100%;
+    }
+    .createdAt{
+        display:block;
+        font-size:0.8rem;
+        color:grey;
+        font-weight: bold;
+    }
+    .delete{
+        margin-left: 11%;
+        margin-top: 10px;
+        height: 20px;
+        width: 100px;
+        background-color: red;
+        color: white;
+        border: 2px solid black;
+    }
+}
+*{
+    margin:0;
+    padding:0;
+}
+body{
+    background-color: rgba(255, 0, 242, 0.24);
+}
+.heading{   
+    background-color: black;
+}
+h1,h2{
+    text-align: center;
+    color: red;
+}
+.user{
+    text-align: center;
+    background-color: yellow;
+    margin-left: 10%;
+    width: 80%;
+    border-radius: 25px;
+    height: 25px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.desc{
+    text-align: center;
+    background-color: yellow;
+    margin-left: 10%;
+    width: 79%;
+    border-radius: 25px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 5px;
+}
+.image{
+    background-color: yellow;
+    margin-left: 10%;
+    width: 80%;
+    border-radius: 40px;
+    height: 25px;
+    font-size: 1.2rem;
+}
+h4{
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.post-body{
+    background-color: rgba(255, 192, 213, 0.26);
+    padding: 25px;
+    margin-bottom:10px;
+    word-wrap: break-word;
+}
+.fa{
+    color: blue;
+    font-size: 15px;
+}
+.btnl{
+    margin-top: 10px;
+    margin-left: 20px;
+    height: 20px;
+    width: 20px;
+    background-color: white;
+    border: rgba(255, 192, 213, 0.26);
+}
+
